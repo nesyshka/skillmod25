@@ -1,9 +1,11 @@
-import pytest
 import re
-from selenium import webdriver
-from selenium.webdriver.common.by import By
 from dataclasses import dataclass
 
+import pytest
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
 
 DRIVER_PATH = "C:\\Users\\user\\PycharmProjects\\selenium\\chromedriver.exe"
 BASE_URL = "https://petfriends.skillfactory.ru/"
@@ -51,7 +53,8 @@ def test_show_all_my_pets(my_pets_page):
     """
     Присутствуют все питомцы.
     """
-    pet_count_in_stats = int(re.findall(r"Питомцев: (\d)", my_pets_page.find_element(By.CLASS_NAME, "task3").text)[0])
+    pet_stats = WebDriverWait(my_pets_page, timeout=10).until(lambda el: el.find_element(By.CLASS_NAME, "task3"))
+    pet_count_in_stats = int(re.findall(r"Питомцев: (\d)", pet_stats.text)[0])
     my_pets_table = my_pets_page.find_element(By.TAG_NAME, "tbody")
     my_pets_count_in_table = len(my_pets_table.find_elements(By.TAG_NAME, "tr"))
     assert pet_count_in_stats == my_pets_count_in_table
